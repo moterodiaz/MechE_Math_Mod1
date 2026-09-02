@@ -9,12 +9,16 @@ function basic_solver_with_tests_template()
     plot(xvals,0*xvals,'k--','linewidth',1);
     xlabel('x'); ylabel('y'); title('Test Function 1');
 
-    % %Newton's method example test
-    % x0_guess = 2;
-    % plot(x0_guess,test_func01(x0_guess),'bo','markerfacecolor','b','markersize',5);
-    % 
-    % x_sol = newton_solver(@test_func01,x0_guess);
-    % plot(x_sol,test_func01(x_sol),'go','markerfacecolor','g','markersize',5);
+    %Newton's method example test
+    x0_guess = 2;
+    dxtol = 0.0001;
+    ftol = 0.0001;
+    max_iter = 100;
+    dxmax = 1000;
+
+    x_newton = newton_solver(@test_func01,x0_guess,dxtol,ftol,max_iter,dxmax);
+    y_newton = test_func01(x_newton);
+    plot(x_newton,y_newton,'go','markerfacecolor','g','markersize',5);
     
 
     %Secant method example test
@@ -33,17 +37,18 @@ function basic_solver_with_tests_template()
     dxtol = 0.0001;
     ftol = 0.0001;
     max_iter = 100;
-    plot(x_left,test_func01(x_left),'bo','markerfacecolor','b','markersize',5);
-    plot(x_right,test_func01(x_right),'ko','markerfacecolor','k','markersize',5);
 
-    x_sol = bisection_solver(@test_func01,x_left,x_right,dxtol,ftol,max_iter);
-    plot(x_sol,test_func01(x_sol),'go','markerfacecolor','g','markersize',5);
+    x_bisection = bisection_solver(@test_func01,x_left,x_right,dxtol,ftol,max_iter);
+    y_bisection = test_func01(x_bisection);
+    plot(x_bisection,y_bisection,'go','markerfacecolor','g','markersize',5);
 
-    fprintf('Approximate root: (x, y) = (%.6f, %.6f)\n', x_sol, test_func01(x_sol));
+    % Display both coordinate pairs
+    fprintf('Newton Method:    (x, y) = (%.6f, %.6f)\n', x_newton, y_newton);
+    fprintf('Bisection Method: (x, y) = (%.6f, %.6f)\n', x_bisection, y_bisection);
 end
 
 
-%Definition of the test function and its derivative (as a single function):
+% Definition of the test function and its derivative (as a single function):
 %This definition uses the function keyword
 %when passing this function as an argument to a solver,
 %you'll need to use the handle operator
@@ -101,10 +106,48 @@ function x = bisection_solver(fun,x_left,x_right,dxtol,ftol,max_iter)
     end
 end
 
-%Note that fun(x) should output [f,dfdx], where dfdx is the derivative of f
-function x = newton_solver(fun,x0)
-    x = x0+1; %this is just dummy code. replace this with your code
-end
+%Note that fun(x) should output [f,dfdx], where dfdx is the derivative of f 
+function x = newton_solver(fun,x0,dxtol,ftol,max_iter,dxmax)
+
+    % Initial root guess
+    x_i = x0;
+
+    for n = 1:max_iter
+
+        % Get function and derivative
+        [f_i,df_i] = fun(x_i);
+
+        % Check for division by zero
+        if df_i == 0
+            x = x_i;
+            return;
+        end
+
+        % Find the next guess
+        x = x_i - f_i/df_i;
+
+        % Check for excessively large change
+        if abs(x - x_i) > dxmax
+            return;
+        end
+
+        % Check function value at new guess
+        f_x = fun(x);
+
+        if abs(f_x) <= ftol
+            return;
+        end
+
+        % Check how much the root guess changes
+        if abs(x - x_i) <= dxtol
+            return;
+        end
+
+        % Update guess
+        x_i = x;
+    end
+    end
+   
 
 function x = secant_solver(fun,x0, x1)
     x = x0+1; %this is just dummy code. replace this with your code
