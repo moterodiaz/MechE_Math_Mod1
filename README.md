@@ -7,3 +7,8 @@
 * Newton's Method
 * Secant Method
 
+### Thursday September 3rd - Testing and Generalizing Behavior
+* Theoretical vs Analytical Behavior
+* Visualizing Relations with Log Functions
+* Approximating Behavior on Inference
+
