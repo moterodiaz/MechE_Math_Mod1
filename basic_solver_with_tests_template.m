@@ -22,13 +22,13 @@ function basic_solver_with_tests_template()
     
 
     %Secant method example test
-    % x0_guess = -5;
-    % x1_guess = 2;
-    % plot(x0_guess,test_func01(x0_guess),'bo','markerfacecolor','b','markersize',5);
-    % plot(x1_guess,test_func01(x1_guess),'ko','markerfacecolor','k','markersize',5);
-    % 
-    % x_sol = secant_solver(@test_func01,x0_guess,x1_guess);
-    % plot(x_sol,test_func01(x_sol),'go','markerfacecolor','g','markersize',5);
+    x0_guess = -5;
+    x1_guess = 2;
+    plot(x0_guess,test_func01(x0_guess),'bo','markerfacecolor','b','markersize',5);
+    plot(x1_guess,test_func01(x1_guess),'ko','markerfacecolor','k','markersize',5);
+
+    x_sol = secant_solver(@test_func01,x0_guess,x1_guess,dxtol,ftol,max_iter,dxmax);
+    plot(x_sol,test_func01(x_sol),'go','markerfacecolor','g','markersize',5);
 
     
     %Bisection method example test
@@ -45,6 +45,8 @@ function basic_solver_with_tests_template()
     % Display both coordinate pairs
     fprintf('Newton Method:    (x, y) = (%.6f, %.6f)\n', x_newton, y_newton);
     fprintf('Bisection Method: (x, y) = (%.6f, %.6f)\n', x_bisection, y_bisection);
+    fprintf('Secant Method: (x, y) = (%.6f, %.6f)\n', x_sol, test_func01(x_sol));
+
 end
 
 
@@ -148,9 +150,68 @@ function x = newton_solver(fun,x0,dxtol,ftol,max_iter,dxmax)
     end
     end
    
+function x = secant_solver(fun, x0_guess, x1_guess, dxtol, ftol, max_iter, dxmax)
 
-function x = secant_solver(fun,x0, x1)
-    x = x0+1; %this is just dummy code. replace this with your code
+    x_first = x0_guess;
+    x_second = x1_guess;
+    denominator_tol = 1e-14;
+
+    f_first = fun(x_first);
+    f_second = fun(x_second);
+
+    % check if guess is a root
+    if abs(f_first) < ftol
+        x = x_first;
+        exit_flag = 1;
+        return
+    elseif abs(f_second) < ftol
+        x = x_second;
+        exit_flag = 1;
+        return
+    end
+
+    %iterations until exit
+    for iter = 1:max_iter
+        denominator = f_second - f_first;
+
+        % make sure denominator passes tolerance
+        if ~isfinite(denominator) || abs(denominator) < denominator_tol
+            x = x_second;
+            exit_flag = -2;
+            return
+        end
+
+        %secant method algorithm
+        dx = -f_second * (x_second - x_first) / denominator;
+
+        % terminate if dx is too large
+        if ~isfinite(dx) || abs(dx) > dxmax
+            x = x_second;
+            exit_flag = -3;
+            return
+        end
+
+        %secant update
+        x_new = x_second + dx;
+        f_new = fun(x_new);
+
+        % early termination if near solution
+        if abs(dx) < dxtol || abs(f_new) < ftol
+            x = x_new;
+            exit_flag = 1;
+            return
+        end
+
+        % shift secant points forward one iteration on update
+        x_first = x_second;
+        f_first = f_second;
+
+        x_second = x_new;
+        f_second = f_new;
+    end
+
+    x = x_second;
+    exit_flag = 0;
 end
 
 

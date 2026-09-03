@@ -1,7 +1,7 @@
-function [x, exit_flag] = secant_solver(fun, x0, x1, dxtol, ftol, max_iter, dxmax)
+function [x, exit_flag] = secant_solver(fun, x0_guess, x1_guess, dxtol, ftol, max_iter, dxmax)
 
-    x_first = x0;
-    x_second = x1;
+    x_first = x0_guess;
+    x_second = x1_guess;
     denominator_tol = 1e-14;
 
     f_first = fun(x_first);
