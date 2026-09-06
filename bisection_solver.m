@@ -7,15 +7,19 @@
 %   dxtol: termination threshold (stop when interval x_right-x_left < dxtol) 
 %   ftol: termination threshold (stop when abs(f(x_guess))<ftol 
 %   max_iter: maximum iteration limit 
-%OUTPUTS 
-%   x: estimate for root of fun 
-%   exit_flag: an integer indicating whether or not the solver succeeded 
-function [x, exit_flag] = bisection_solver(fun,x_left,x_right,dxtol,ftol,max_iter) 
- 
-    % Initialize exit flag 
-    exit_flag = 0; 
- 
-    if sign(fun(x_left)) == sign(fun(x_right)) 
+%OUTPUTS
+%   x: estimate for root of fun
+%   exit_flag: an integer indicating whether or not the solver succeeded
+%   guess_list: the endpoint discarded at each iteration (cleaner than the
+%   midpoints for convergence plots, since it doesn't get lucky and land
+%   near the root early)
+function [x, exit_flag, guess_list] = bisection_solver(fun,x_left,x_right,dxtol,ftol,max_iter)
+
+    % Initialize exit flag
+    exit_flag = 0;
+    guess_list = [];
+
+    if sign(fun(x_left)) == sign(fun(x_right))
         disp('Root Does Not Necessarily Exist Between Bounds') 
         return; 
     end 
@@ -42,11 +46,13 @@ function [x, exit_flag] = bisection_solver(fun,x_left,x_right,dxtol,ftol,max_ite
     % becomes new right bound 
     % If the right bound and midpoint have different sign values, midpoint 
     % becomes new left bound 
-    if sign(fun(x_left)) ~= sign(f_c) 
-        x_right = c; 
-    else 
-        x_left = c; 
-    end 
+    if sign(fun(x_left)) ~= sign(f_c)
+        guess_list(end+1) = x_right; % x_right is being discarded
+        x_right = c;
+    else
+        guess_list(end+1) = x_left; % x_left is being discarded
+        x_left = c;
+    end
      
     % Termination threshold --> Diff between left and right bounds 
         if abs(x_left - x_right) <= dxtol 
