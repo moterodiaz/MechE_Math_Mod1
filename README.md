@@ -12,3 +12,8 @@
 * Visualizing Relations with Log Functions
 * Approximating Behavior on Inference
 
+### Thursday September 10th - Analyzing the Initial Guess
+* Sigmoid Function Test Case
+* Parameter Sweep of Initial Guesses
+* 
+

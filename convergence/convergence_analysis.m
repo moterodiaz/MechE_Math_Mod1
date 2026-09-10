@@ -1,11 +1,14 @@
-function [p, k] = convergence_analysis(solver_flag, fun, x_guess0, guess_list1, guess_list2, filter_list)
+function [p, k] = convergence_analysis(solver_flag, fun, x_guess0, guess_list1, guess_list2, filter_list, x_root)
 %solver_flag: 1 bisection 2 newton 3 secant 4 fzero
 %filter_list = [e_n min, e_n max, e_np1 min, e_np1 max, min iteration]
 % Ensure repository root and all subfolders are in MATLAB's path
 repo_root = fileparts(fileparts(mfilename('fullpath')));
 addpath(genpath(repo_root));
 
-x_root = fzero(fun, x_guess0);
+if x_root == 0
+    x_root = fzero(fun, x_guess0);
+end
+
 [e_n, e_np1, index_list] = data_collection(solver_flag, fun, x_root, guess_list1, guess_list2);
 
 %clean out the junk (too small = machine precision noise, too big = not converged yet)
