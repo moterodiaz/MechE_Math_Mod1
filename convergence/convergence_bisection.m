@@ -1,4 +1,7 @@
 function convergence_bisection()
+% Ensure repository root and all subfolders are in MATLAB's path
+repo_root = fileparts(fileparts(mfilename('fullpath')));
+addpath(genpath(repo_root));
 
     % ---------------------------------------------------------
     % Find the root
