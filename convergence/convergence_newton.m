@@ -1,5 +1,8 @@
 % Convergence experiment for Newton's method
 function convergence_newton()
+% Ensure repository root and all subfolders are in MATLAB's path
+repo_root = fileparts(fileparts(mfilename('fullpath')));
+addpath(genpath(repo_root));
 
     % ---------------------------------------------------------
     % Find the root we want to study
