@@ -15,5 +15,6 @@
 ### Thursday September 10th - Analyzing the Initial Guess
 * Sigmoid Function Test Case
 * Parameter Sweep of Initial Guesses
-* 
+* Success/Failure Maps for Newton, fzero (1D) and Bisection, Secant (2D) on the Sigmoid
+* Newton and Secant Convergence on a Quadratic Whose Root Is Its Minimum
 
