@@ -2,17 +2,16 @@ function [x, exit_flag] = secant_solver(fun, x0_guess, x1_guess, dxtol, ftol, ma
 
     x_first = x0_guess;
     x_second = x1_guess;
-    denominator_tol = 1e-14;
 
     f_first = fun(x_first);
     f_second = fun(x_second);
 
     % check if guess is a root
-    if abs(f_first) < ftol
+    if abs(f_first) <= ftol
         x = x_first;
         exit_flag = 1;
         return
-    elseif abs(f_second) < ftol
+    elseif abs(f_second) <= ftol
         x = x_second;
         exit_flag = 1;
         return
@@ -21,9 +20,10 @@ function [x, exit_flag] = secant_solver(fun, x0_guess, x1_guess, dxtol, ftol, ma
     %iterations until exit
     for iter = 1:max_iter
         denominator = f_second - f_first;
+        denominator_tol = 8*eps(max(abs([f_first,f_second])));
 
         % make sure denominator passes tolerance
-        if ~isfinite(denominator) || abs(denominator) < denominator_tol
+        if ~isfinite(denominator) || abs(denominator) <= denominator_tol
             x = x_second;
             exit_flag = -2;
             return
@@ -42,6 +42,13 @@ function [x, exit_flag] = secant_solver(fun, x0_guess, x1_guess, dxtol, ftol, ma
         %secant update
         x_new = x_second + dx;
         f_new = fun(x_new);
+
+        % terminate if the new guess or function value is invalid
+        if ~isfinite(x_new) || ~isfinite(f_new)
+            x = x_second;
+            exit_flag = -3;
+            return
+        end
 
         % early termination if near solution
         if abs(dx) < dxtol || abs(f_new) < ftol

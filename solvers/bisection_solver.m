@@ -18,9 +18,21 @@ function [x, exit_flag, guess_list] = bisection_solver(fun,x_left,x_right,dxtol,
     % Initialize exit flag
     exit_flag = 0;
     guess_list = [];
+    x = NaN;
+
+    % Check if either bound is already a root
+    if abs(fun(x_left)) <= ftol
+        x = x_left;
+        exit_flag = 1;
+        return;
+    elseif abs(fun(x_right)) <= ftol
+        x = x_right;
+        exit_flag = 1;
+        return;
+    end
 
     if sign(fun(x_left)) == sign(fun(x_right))
-        disp('Root Does Not Necessarily Exist Between Bounds') 
+        exit_flag = -1;
         return; 
     end 
  
@@ -33,6 +45,11 @@ function [x, exit_flag, guess_list] = bisection_solver(fun,x_left,x_right,dxtol,
  
     % Calculate function at midpoint 
     f_c = fun(c); 
+
+    if ~isfinite(f_c)
+        exit_flag = -1;
+        return;
+    end
      
     % Termination threshold --> Diff between estimate and zero 
     if abs(f_c) <= ftol 
@@ -57,8 +74,8 @@ function [x, exit_flag, guess_list] = bisection_solver(fun,x_left,x_right,dxtol,
     % Termination threshold --> Diff between left and right bounds 
         if abs(x_left - x_right) <= dxtol 
             exit_flag = 1; 
-            disp('X termination criteria met'); 
             return; 
         end 
  
     end
+end

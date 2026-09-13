@@ -88,6 +88,9 @@ comparison_table = table(table_func, table_solver, table_p_pred, table_p_meas, t
 fprintf('\n================== COMPARISON TABLE ==================\n');
 disp(comparison_table);
 
+% Run the Part 4 quadratic and sigmoid experiments
+part4_results = run_part4_experiments();
+
 function [fval,dfdx] = test1(x)
     fval = (x.^3)/100 - (x.^2)/8 + 2*x + 6*sin(x/2+6) -.7 - exp(x/6);
     dfdx = 3*(x.^2)/100 - 2*x/8 + 2 +(6/2)*cos(x/2+6) - exp(x/6)/6;
